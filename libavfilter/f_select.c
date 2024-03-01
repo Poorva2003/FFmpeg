@@ -90,7 +90,10 @@ static const char *const var_names[] = {
 
     "concatdec_select",  ///< frame is within the interval set by the concat demuxer
 
+        "ih",
+    "iw",
     NULL
+
 };
 
 enum var_name {
@@ -144,6 +147,9 @@ enum var_name {
 
     VAR_CONCATDEC_SELECT,
 
+   
+      VAR_IH,
+    VAR_IW,
     VAR_VARS_NB
 };
 
@@ -263,7 +269,8 @@ static int config_input(AVFilterLink *inlink)
     select->var_values[VAR_SCENE]             = NAN;
     select->var_values[VAR_CONSUMED_SAMPLES_N] = NAN;
     select->var_values[VAR_SAMPLES_N]          = NAN;
-
+    select->var_values[VAR_IH] = inlink->h;
+    select->var_values[VAR_IW] = inlink->w;
     select->var_values[VAR_SAMPLE_RATE] =
         inlink->type == AVMEDIA_TYPE_AUDIO ? inlink->sample_rate : NAN;
 
@@ -370,6 +377,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
         }
         break;
     }
+      select->var_values[VAR_IH] = frame->height;
+       select->var_values[VAR_IW] = frame->width;
 
     select->select = res = av_expr_eval(select->expr, select->var_values, NULL);
     av_log(inlink->dst, AV_LOG_DEBUG,
